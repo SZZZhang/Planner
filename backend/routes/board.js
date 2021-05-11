@@ -1,13 +1,19 @@
 const router = require('express').Router();
 let Board = require('../models/board.model');
 
-router.route('/get-all').get((req, res) => {
-    Board.find({ userId: req.body.userId })
-        .populate('columns')
-        .populate({ path: "columns", populate: { path: "cards" }})
+router.route('/get-all/:userId').get((req, res) => {
+    Board.find({ userId: req.params.userId })
         .then(boards => res.json(boards))
         .catch(err => res.status(400).json('Error: ' + err));
 });
+
+router.route('/:boardId').get((req, res) => {
+    Board.findById(req.params.boardId)
+        .populate('columns')
+        .populate({ path: 'columns', populate: { path: 'cards' } })
+        .then(boards => res.json(boards))
+        .catch(err => res.status(400).json('Error: ' + err));
+})
 
 router.route('/create').post((req, res) => {
     const userId = req.body.userId;
@@ -21,7 +27,7 @@ router.route('/create').post((req, res) => {
     });
 
     newBoard.save()
-        .then(() => res.json('New board created!'))
+        .then(() => res.json(newBoard.id))
         .catch(err => res.status(400).json('Error: ' + err));
 });
 

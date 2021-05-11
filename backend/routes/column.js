@@ -4,7 +4,6 @@ let Board = require('../models/board.model');
 
 router.route('/get-all/:boardId').get((req, res) => {
     Column.find({ columnId: req.params.boardId })
-        .populate('cards')
         .then(columns => res.json(columns))
         .catch(err => res.status(400).json('Error: ' + err));
 });
